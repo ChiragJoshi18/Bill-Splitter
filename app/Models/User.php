@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\Group;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,4 +46,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id');
+    }
+    public function expenses()
+    {
+        return $this->belongsToMany(Expense::class, 'expense_user')->withPivot('amount');
+    }
+        public function settlementsSent()
+    {
+        return $this->hasMany(Settlement::class, 'from_user_id');
+    }
+
+    public function settlementsReceived()
+    {
+        return $this->hasMany(Settlement::class, 'to_user_id');
+    }
+
 }
