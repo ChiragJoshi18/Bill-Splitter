@@ -3,7 +3,6 @@ import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
-import CreateGroupModal from './Groups/CreateGroupModal';
 import EditGroupModal from './Groups/EditGroupModal';
 import DeleteGroupModal from './Groups/DeleteGroupModal';
 import { Pencil, Trash2 } from 'lucide-react';
@@ -38,7 +37,6 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function Dashboard({ groups, auth }: Props) {
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [editGroup, setEditGroup] = useState<Group | null>(null);
   const [deleteGroup, setDeleteGroup] = useState<Group | null>(null);
 
@@ -46,14 +44,6 @@ export default function Dashboard({ groups, auth }: Props) {
     <AppLayout breadcrumbs={breadcrumbs}>
       <Head title="Dashboard" />
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
-        <div className="flex justify-end">
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="inline-block rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition"
-          >
-            + Create Group
-          </button>
-        </div>
 
         {/* Top 3 Placeholder Cards */}
         <div className="grid auto-rows-min gap-4 md:grid-cols-3">
@@ -95,6 +85,7 @@ export default function Dashboard({ groups, auth }: Props) {
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
+
                       </div>
                     )}
                   </div>
@@ -127,7 +118,6 @@ export default function Dashboard({ groups, auth }: Props) {
         </div>
       </div>
 
-      <CreateGroupModal open={showCreateModal} onClose={() => setShowCreateModal(false)} />
       {editGroup && (
         <EditGroupModal group={editGroup} onClose={() => setEditGroup(null)} />
       )}

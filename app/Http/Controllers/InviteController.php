@@ -45,8 +45,19 @@ class InviteController extends Controller
     public function accept($token)
     {
         $invite = GroupInvitation::where('token', $token)->where('status', 'pending')->firstOrFail();
+        session(['invite_token' => $token]);
 
+        if (!Auth::check()) {
+            return redirect()->route('login')->with('message', 'Please log in to accept the invitation.');
+        }
+
+        return redirect('/dashboard'); // Let middleware complete the process
+    }
+
+    public function completeInvitation(GroupInvitation $invite)
+    {
         $user = Auth::user();
+
         if ($user->email !== $invite->email) {
             abort(403, 'Unauthorized: Email mismatch');
         }
@@ -54,10 +65,10 @@ class InviteController extends Controller
         $invite->status = 'accepted';
         $invite->save();
 
-        // Attach user to the group (assuming many-to-many)
         $invite->group->members()->attach($user->id);
+
+        session()->forget('invite_token');
 
         return redirect('/dashboard')->with('success', 'You have joined the group!');
     }
 }
-?>

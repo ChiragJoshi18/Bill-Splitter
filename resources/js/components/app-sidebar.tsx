@@ -1,10 +1,26 @@
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarGroup, SidebarGroupLabel } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { 
+    LayoutGrid, 
+    Users, 
+    Receipt, 
+    DollarSign, 
+    BarChart3, 
+    Plus, 
+    UserPlus, 
+    Mail, 
+    User, 
+    Lock, 
+    Palette, 
+    Bell,
+    Folder,
+    Settings,
+    Zap
+} from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -13,22 +29,51 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: 'Groups',
+        href: '/groups',
+        icon: Users,
+    },
+    {
+        title: 'Expenses',
+        href: '/expenses',
+        icon: Receipt,
+    },
+    {
+        title: 'Settlements',
+        href: '/settlements',
+        icon: DollarSign,
+    },
+    {
+        title: 'Reports',
+        href: '/reports',
+        icon: BarChart3,
+    },
 ];
 
-const footerNavItems: NavItem[] = [
+const quickActions: NavItem[] = [
     {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
+        title: 'Add Expense',
+        href: '/expenses/create',
+        icon: Plus,
     },
     {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
+        title: 'Create Group',
+        href: '/groups/create',
+        icon: UserPlus,
+    },
+    {
+        title: 'Invite Member',
+        href: '/invite',
+        icon: Mail,
     },
 ];
+
+
 
 export function AppSidebar() {
+    const page = usePage();
+    
     return (
         <Sidebar collapsible="icon" variant="inset">
             <SidebarHeader>
@@ -44,11 +89,52 @@ export function AppSidebar() {
             </SidebarHeader>
 
             <SidebarContent>
-                <NavMain items={mainNavItems} />
+                {/* Main Navigation */}
+                <SidebarGroup className="px-2 py-0">
+                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {mainNavItems.map((item) => (
+                            <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton 
+                                    asChild 
+                                    isActive={page.url.startsWith(item.href)} 
+                                    tooltip={{ children: item.title }}
+                                >
+                                    <Link href={item.href} prefetch>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
+
+                {/* Quick Actions */}
+                <SidebarGroup className="px-2 py-0">
+                    <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
+                    <SidebarMenu>
+                        {quickActions.map((item) => (
+                            <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton 
+                                    asChild 
+                                    isActive={page.url.startsWith(item.href)} 
+                                    tooltip={{ children: item.title }}
+                                >
+                                    <Link href={item.href} prefetch>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </SidebarMenu>
+                </SidebarGroup>
+
+
             </SidebarContent>
 
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
+            <SidebarFooter className='mb-5'>
                 <NavUser />
             </SidebarFooter>
         </Sidebar>

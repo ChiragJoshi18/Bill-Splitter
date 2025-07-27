@@ -21,7 +21,7 @@ class GroupInviteMail extends Mailable
 
     public function build()
     {
-        $inviteLink = url("/invitations/accept/{$this->token}");
+        $inviteLink = url('/groups/invite/accept/' . $this->token);
 
         return $this->subject('You are invited to join a group')
             ->view('emails.invite')

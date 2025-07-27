@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\GroupController;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\InviteController; 
+use App\Http\Controllers\InviteController;
 
 
 // Homepage
@@ -12,13 +12,13 @@ Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
 
-// Authenticated routes
-// Authenticated routes
+Route::get('/groups/invite/accept/{token}', [InviteController::class, 'accept'])->name('groups.invite.accept');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         $user = Auth::user();
         $groups = $user->groups()
-            ->with('users:id,name') 
+            ->with('users:id,name')
             ->get(['groups.id', 'groups.name', 'groups.description', 'groups.created_by']);
 
         return Inertia::render('dashboard', [
@@ -30,16 +30,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('Groups/GroupList');
     })->name('groups.index');
 
-    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
-    Route::patch('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
-    Route::delete('/groups/{group}', [GroupController::class, 'destroy'])->name('groups.destroy');
+    Route::controller(GroupController::class)->group(function () {
+        Route::get('/groups/create', 'create')->name('groups.create');
+        Route::post('/groups', 'store')->name('groups.store');
+        Route::patch('/groups/{group}', 'update')->name('groups.update');
+        Route::delete('/groups/{group}', 'destroy')->name('groups.destroy');
+
+        Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
+        Route::patch('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
+        Route::delete('/groups/{group}', [GroupController::class, 'destroy'])->name('groups.destroy');
+    });
+
+
 
     Route::post('/groups/invite/send', [InviteController::class, 'send'])->name('groups.invite.send');
-    Route::get('/groups/invite/accept/{token}', [InviteController::class, 'accept'])->name('groups.invite.accept');
+
+    Route::fallback(function () {
+        return "<h1>Page Not found</h1>";
+    });
 });
 
 
 
 // Additional files
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';
