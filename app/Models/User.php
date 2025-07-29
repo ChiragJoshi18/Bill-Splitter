@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'country_id',
     ];
 
     /**
@@ -48,11 +49,23 @@ class User extends Authenticatable
     }
     public function groups()
     {
-        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id');
+        return $this->belongsToMany(Group::class, 'group_members', 'user_id', 'group_id')
+                    ->withPivot('joined_at')
+                    ->withTimestamps();
     }
+    
     public function expenses()
     {
-        return $this->belongsToMany(Expense::class, 'expense_user')->withPivot('amount');
+        return $this->belongsToMany(Expense::class, 'expense_participants', 'user_id', 'expense_id')
+                    ->withPivot('share_amount')
+                    ->withTimestamps();
+    }
+    
+    public function paidExpenses()
+    {
+        return $this->belongsToMany(Expense::class, 'expense_payers', 'user_id', 'expense_id')
+                    ->withPivot('amount_paid')
+                    ->withTimestamps();
     }
         public function settlementsSent()
     {
@@ -62,6 +75,30 @@ class User extends Authenticatable
     public function settlementsReceived()
     {
         return $this->hasMany(Settlement::class, 'to_user_id');
+    }
+
+    /**
+     * Get the country for this user.
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the user's currency information.
+     */
+    public function getCurrencyAttribute()
+    {
+        return $this->country?->currency_code ?? 'USD';
+    }
+
+    /**
+     * Get the user's currency symbol.
+     */
+    public function getCurrencySymbolAttribute()
+    {
+        return $this->country?->currency_symbol ?? '$';
     }
 
 }

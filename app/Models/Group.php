@@ -10,7 +10,14 @@ class Group extends Model
     protected $fillable = ['name', 'description', 'created_by'];
     public function users()
     {
-        return $this->belongsToMany(User::class, 'group_user', 'group_id','user_id');
+        return $this->belongsToMany(User::class, 'group_members', 'group_id','user_id');
+    }
+    
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'group_members', 'group_id', 'user_id')
+                    ->withPivot('joined_at')
+                    ->withTimestamps();
     }
     public function expenses()
     {

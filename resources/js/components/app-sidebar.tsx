@@ -8,18 +8,9 @@ import {
     LayoutGrid, 
     Users, 
     Receipt, 
-    DollarSign, 
+    CreditCard, 
     BarChart3, 
-    Plus, 
-    UserPlus, 
-    Mail, 
-    User, 
-    Lock, 
-    Palette, 
-    Bell,
-    Folder,
-    Settings,
-    Zap
+    Mail
 } from 'lucide-react';
 import AppLogo from './app-logo';
 
@@ -35,6 +26,11 @@ const mainNavItems: NavItem[] = [
         icon: Users,
     },
     {
+        title: 'Invites',
+        href: '/invites',
+        icon: Mail,
+    },
+    {
         title: 'Expenses',
         href: '/expenses',
         icon: Receipt,
@@ -42,7 +38,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Settlements',
         href: '/settlements',
-        icon: DollarSign,
+        icon: CreditCard,
     },
     {
         title: 'Reports',
@@ -51,23 +47,7 @@ const mainNavItems: NavItem[] = [
     },
 ];
 
-const quickActions: NavItem[] = [
-    {
-        title: 'Add Expense',
-        href: '/expenses/create',
-        icon: Plus,
-    },
-    {
-        title: 'Create Group',
-        href: '/groups/create',
-        icon: UserPlus,
-    },
-    {
-        title: 'Invite Member',
-        href: '/invite',
-        icon: Mail,
-    },
-];
+
 
 
 
@@ -110,26 +90,7 @@ export function AppSidebar() {
                     </SidebarMenu>
                 </SidebarGroup>
 
-                {/* Quick Actions */}
-                <SidebarGroup className="px-2 py-0">
-                    <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
-                    <SidebarMenu>
-                        {quickActions.map((item) => (
-                            <SidebarMenuItem key={item.title}>
-                                <SidebarMenuButton 
-                                    asChild 
-                                    isActive={page.url.startsWith(item.href)} 
-                                    tooltip={{ children: item.title }}
-                                >
-                                    <Link href={item.href} prefetch>
-                                        {item.icon && <item.icon />}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
-                    </SidebarMenu>
-                </SidebarGroup>
+
 
 
             </SidebarContent>

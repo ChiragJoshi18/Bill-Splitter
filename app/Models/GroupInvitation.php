@@ -11,5 +11,16 @@ class GroupInvitation extends Model
         'email',
         'token',
         'invited_by',
+        'status',
     ];
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function inviter()
+    {
+        return $this->belongsTo(User::class, 'invited_by');
+    }
 }

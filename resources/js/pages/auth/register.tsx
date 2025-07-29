@@ -7,6 +7,7 @@ import TextLink from '@/components/text-link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AuthLayout from '@/layouts/auth-layout';
 
 type RegisterForm = {
@@ -14,14 +15,27 @@ type RegisterForm = {
     email: string;
     password: string;
     password_confirmation: string;
+    country_id: string;
 };
 
-export default function Register() {
+interface RegisterProps {
+    countries: Array<{
+        id: number;
+        name: string;
+        code: string;
+        currency_code: string;
+        currency_symbol: string;
+        currency_name: string;
+    }>;
+}
+
+export default function Register({ countries }: RegisterProps) {
     const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
         name: '',
         email: '',
         password: '',
         password_confirmation: '',
+        country_id: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -70,12 +84,33 @@ export default function Register() {
                     </div>
 
                     <div className="grid gap-2">
+                        <Label htmlFor="country">Country of Residence</Label>
+                        <Select
+                            value={data.country_id}
+                            onValueChange={(value) => setData('country_id', value)}
+                            disabled={processing}
+                        >
+                            <SelectTrigger tabIndex={3}>
+                                <SelectValue placeholder="Select your country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {countries.map((country) => (
+                                    <SelectItem key={country.id} value={country.id.toString()}>
+                                        {country.name} ({country.currency_symbol} {country.currency_code})
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <InputError message={errors.country_id} />
+                    </div>
+
+                    <div className="grid gap-2">
                         <Label htmlFor="password">Password</Label>
                         <Input
                             id="password"
                             type="password"
                             required
-                            tabIndex={3}
+                            tabIndex={4}
                             autoComplete="new-password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
@@ -91,7 +126,7 @@ export default function Register() {
                             id="password_confirmation"
                             type="password"
                             required
-                            tabIndex={4}
+                            tabIndex={5}
                             autoComplete="new-password"
                             value={data.password_confirmation}
                             onChange={(e) => setData('password_confirmation', e.target.value)}
@@ -101,7 +136,7 @@ export default function Register() {
                         <InputError message={errors.password_confirmation} />
                     </div>
 
-                    <Button type="submit" className="mt-2 w-full" tabIndex={5} disabled={processing}>
+                    <Button type="submit" className="mt-2 w-full" tabIndex={6} disabled={processing}>
                         {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
                         Create account
                     </Button>
@@ -109,7 +144,7 @@ export default function Register() {
 
                 <div className="text-center text-sm text-muted-foreground">
                     Already have an account?{' '}
-                    <TextLink href={route('login')} tabIndex={6}>
+                    <TextLink href={route('login')} tabIndex={7}>
                         Log in
                     </TextLink>
                 </div>

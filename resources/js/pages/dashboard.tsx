@@ -1,10 +1,10 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
 import AppLayout from '@/layouts/app-layout';
 import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 import EditGroupModal from './Groups/EditGroupModal';
 import DeleteGroupModal from './Groups/DeleteGroupModal';
+import FinancialSummaryCards from '@/components/financial-summary-cards';
 import { Pencil, Trash2 } from 'lucide-react';
 
 interface User {
@@ -27,6 +27,12 @@ interface Props {
       id: number;
     };
   };
+  financialSummary: {
+    amountToPay: number;
+    amountToReceive: number;
+    totalExpenses: number;
+    currencySymbol: string;
+  };
 }
 
 const breadcrumbs: BreadcrumbItem[] = [
@@ -36,7 +42,7 @@ const breadcrumbs: BreadcrumbItem[] = [
   },
 ];
 
-export default function Dashboard({ groups, auth }: Props) {
+export default function Dashboard({ groups, auth, financialSummary }: Props) {
   const [editGroup, setEditGroup] = useState<Group | null>(null);
   const [deleteGroup, setDeleteGroup] = useState<Group | null>(null);
 
@@ -45,17 +51,13 @@ export default function Dashboard({ groups, auth }: Props) {
       <Head title="Dashboard" />
       <div className="flex h-full flex-1 flex-col gap-4 rounded-xl p-4 overflow-x-auto">
 
-        {/* Top 3 Placeholder Cards */}
-        <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-          {[1, 2, 3].map((_, i) => (
-            <div
-              key={i}
-              className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-            >
-              <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-            </div>
-          ))}
-        </div>
+        {/* Financial Summary Cards */}
+        <FinancialSummaryCards
+          amountToPay={financialSummary.amountToPay}
+          amountToReceive={financialSummary.amountToReceive}
+          totalExpenses={financialSummary.totalExpenses}
+          currencySymbol={financialSummary.currencySymbol}
+        />
 
         {/* Group Cards */}
         <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 p-4 md:min-h-min dark:border-sidebar-border bg-white dark:bg-neutral-900">

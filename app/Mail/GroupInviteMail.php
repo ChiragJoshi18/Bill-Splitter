@@ -27,6 +27,7 @@ class GroupInviteMail extends Mailable
             ->view('emails.invite')
             ->with([
                 'groupName' => $this->group->name,
+                'groupDescription' => $this->group->description,
                 'inviteLink' => $inviteLink,
             ]);
     }

@@ -8,14 +8,21 @@ interface Props {
     name: string;
   };
   onClose: () => void;
+  onGroupDeleted?: (groupId: number) => void;
 }
 
-export default function DeleteGroupModal({ group, onClose }: Props) {
+export default function DeleteGroupModal({ group, onClose, onGroupDeleted }: Props) {
   const { delete: destroy, processing } = useForm();
 
   const handleDelete = () => {
     destroy(`/groups/${group.id}`, {
-      onSuccess: () => onClose(),
+      onSuccess: () => {
+        onClose();
+        // Call the callback to update the local state
+        if (onGroupDeleted) {
+          onGroupDeleted(group.id);
+        }
+      },
     });
   };
 

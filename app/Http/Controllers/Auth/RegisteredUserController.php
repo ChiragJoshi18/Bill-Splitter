@@ -20,7 +20,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('auth/register');
+        return Inertia::render('auth/register', [
+            'countries' => \App\Models\Country::orderBy('name')->get(),
+        ]);
     }
 
     /**
@@ -34,12 +36,14 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'country_id' => 'required|exists:countries,id',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'country_id' => $request->country_id,
         ]);
 
         event(new Registered($user));

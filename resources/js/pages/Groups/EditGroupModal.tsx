@@ -8,19 +8,28 @@ interface Props {
   group: {
     id: number;
     name: string;
+    description: string | null;
   };
   onClose: () => void;
+  onGroupUpdated?: (groupId: number, updatedData: any) => void;
 }
 
-export default function EditGroupModal({ group, onClose }: Props) {
+export default function EditGroupModal({ group, onClose, onGroupUpdated }: Props) {
   const { data, setData, patch, processing, errors } = useForm({
     name: group.name,
+    description: group.description || '',
   });
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     patch(`/groups/${group.id}`, {
-      onSuccess: () => onClose(),
+      onSuccess: () => {
+        onClose();
+        // Call the callback to update the local state
+        if (onGroupUpdated) {
+          onGroupUpdated(group.id, { name: data.name, description: data.description });
+        }
+      },
     });
   };
 
@@ -43,6 +52,21 @@ export default function EditGroupModal({ group, onClose }: Props) {
               disabled={processing}
             />
             {errors.name && <p className="text-sm text-red-500 mt-1">{errors.name}</p>}
+          </div>
+          
+          <div>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-white">
+              Description
+            </label>
+            <textarea
+              id="description"
+              value={data.description}
+              onChange={(e) => setData('description', e.target.value)}
+              rows={3}
+              className="w-full rounded-md border px-3 py-2 bg-background"
+              disabled={processing}
+            />
+            {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
           </div>
 
           <div className="flex justify-end space-x-2">
