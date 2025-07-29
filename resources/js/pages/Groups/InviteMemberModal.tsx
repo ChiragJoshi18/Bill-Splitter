@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from '@inertiajs/react';
 import { Mail, UserPlus } from 'lucide-react';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   open: boolean;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function InviteMemberModal({ open, onClose, groupId, groups }: Props) {
+  const { addToast } = useToast();
   const { data, setData, post, processing, errors, reset } = useForm({
     email: '',
     group_id: groupId ?? '',
@@ -24,7 +26,19 @@ export default function InviteMemberModal({ open, onClose, groupId, groups }: Pr
       onSuccess: () => {
         reset();
         onClose();
+        addToast({
+          type: 'success',
+          title: 'Invitation sent successfully!',
+          message: `Invitation has been sent to ${data.email}.`
+        });
       },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Failed to send invitation',
+          message: Object.values(errors).join(', ')
+        });
+      }
     });
   };
 

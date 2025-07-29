@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/components/ui/toast';
 import { 
     CreditCard, 
     Users, 
@@ -43,6 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function CreateSettlement({ groups, user }: Props) {
+  const { addToast } = useToast();
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
 
   const { data, setData, post, processing, errors } = useForm({
@@ -60,7 +62,23 @@ export default function CreateSettlement({ groups, user }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/settlements');
+    post('/settlements', {
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          title: 'Settlement created successfully!',
+          message: 'Your settlement has been created and sent.'
+        });
+        // The page will redirect to settlements list, which will show the new settlement
+      },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Failed to create settlement',
+          message: Object.values(errors).join(', ')
+        });
+      }
+    });
   };
 
   const formatAmount = (amount: number) => {

@@ -5,6 +5,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\SettlementController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\InviteController;
 
@@ -81,6 +83,15 @@ Route::get('/settlements', [SettlementController::class, 'index'])->name('settle
 Route::get('/settlements/create', [SettlementController::class, 'create'])->name('settlements.create');
 Route::post('/settlements', [SettlementController::class, 'createSettlement'])->name('settlements.store');
 Route::patch('/settlements/{settlement}/status', [SettlementController::class, 'updateStatus'])->name('settlements.update-status');
+
+// Notifications
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::get('/notifications/unread-count', [NotificationController::class, 'getUnreadCount'])->name('notifications.unread-count');
+
+// Reports
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::get('/reports/group/{groupId}', [ReportController::class, 'groupReport'])->name('reports.group');
+Route::post('/reports/export', [ReportController::class, 'exportReport'])->name('reports.export');
 
     Route::controller(GroupController::class)->group(function () {
         Route::get('/groups/create', 'create')->name('groups.create');

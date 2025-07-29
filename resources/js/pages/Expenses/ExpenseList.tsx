@@ -50,6 +50,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function ExpenseList({ expenses, user }: Props) {
+  const [localExpenses, setLocalExpenses] = React.useState<Expense[]>(expenses);
+  
+  // Update local expenses when props change
+  React.useEffect(() => {
+    setLocalExpenses(expenses);
+  }, [expenses]);
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -93,11 +100,11 @@ export default function ExpenseList({ expenses, user }: Props) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Receipt className="w-5 h-5" />
-              Your Expenses ({expenses.length})
+              Your Expenses ({localExpenses.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {expenses.length === 0 ? (
+            {localExpenses.length === 0 ? (
               <div className="text-center py-8">
                 <Receipt className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No expenses yet</h3>
@@ -107,7 +114,7 @@ export default function ExpenseList({ expenses, user }: Props) {
               </div>
             ) : (
               <div className="space-y-4">
-                {expenses.map((expense) => (
+                {localExpenses.map((expense) => (
                   <div key={expense.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">

@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useForm } from '@inertiajs/react';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   group: {
@@ -12,17 +13,30 @@ interface Props {
 }
 
 export default function DeleteGroupModal({ group, onClose, onGroupDeleted }: Props) {
+  const { addToast } = useToast();
   const { delete: destroy, processing } = useForm();
 
   const handleDelete = () => {
     destroy(`/groups/${group.id}`, {
       onSuccess: () => {
         onClose();
+        addToast({
+          type: 'success',
+          title: 'Group deleted successfully!',
+          message: `The group "${group.name}" has been deleted.`
+        });
         // Call the callback to update the local state
         if (onGroupDeleted) {
           onGroupDeleted(group.id);
         }
       },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Failed to delete group',
+          message: Object.values(errors).join(', ')
+        });
+      }
     });
   };
 

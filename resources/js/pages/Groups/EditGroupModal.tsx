@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useForm } from '@inertiajs/react';
 import { FormEvent } from 'react';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   group: {
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export default function EditGroupModal({ group, onClose, onGroupUpdated }: Props) {
+  const { addToast } = useToast();
   const { data, setData, patch, processing, errors } = useForm({
     name: group.name,
     description: group.description || '',
@@ -25,11 +27,23 @@ export default function EditGroupModal({ group, onClose, onGroupUpdated }: Props
     patch(`/groups/${group.id}`, {
       onSuccess: () => {
         onClose();
+        addToast({
+          type: 'success',
+          title: 'Group updated successfully!',
+          message: `The group "${data.name}" has been updated.`
+        });
         // Call the callback to update the local state
         if (onGroupUpdated) {
           onGroupUpdated(group.id, { name: data.name, description: data.description });
         }
       },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Failed to update group',
+          message: Object.values(errors).join(', ')
+        });
+      }
     });
   };
 

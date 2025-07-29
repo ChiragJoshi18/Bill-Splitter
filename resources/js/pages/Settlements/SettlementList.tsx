@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/app-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/components/ui/toast';
 import { 
     CreditCard, 
     Users, 
@@ -67,7 +68,14 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function SettlementList({ settlements, groupBalances, summary, user }: Props) {
+  const { addToast } = useToast();
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null);
+  const [localSettlements, setLocalSettlements] = useState<Settlement[]>(settlements);
+  
+  // Update local settlements when props change
+  React.useEffect(() => {
+    setLocalSettlements(settlements);
+  }, [settlements]);
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -113,8 +121,36 @@ export default function SettlementList({ settlements, groupBalances, summary, us
   };
 
   const updateSettlementStatus = (settlementId: number, status: 'completed' | 'rejected') => {
+    // Optimistic update - update UI immediately
+    setLocalSettlements(prev => prev.map(settlement => 
+      settlement.id === settlementId 
+        ? { ...settlement, status: status }
+        : settlement
+    ));
+    
     router.patch(`/settlements/${settlementId}/status`, {
       status: status,
+    }, {
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          title: 'Settlement updated!',
+          message: `Settlement has been ${status === 'completed' ? 'accepted' : 'rejected'}.`
+        });
+      },
+      onError: (errors) => {
+        // Revert on error
+        setLocalSettlements(prev => prev.map(settlement => 
+          settlement.id === settlementId 
+            ? { ...settlement, status: settlement.status === 'completed' ? 'rejected' : 'completed' }
+            : settlement
+        ));
+        addToast({
+          type: 'error',
+          title: 'Failed to update settlement',
+          message: Object.values(errors).join(', ')
+        });
+      }
     });
   };
 
@@ -248,11 +284,11 @@ export default function SettlementList({ settlements, groupBalances, summary, us
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="w-5 h-5" />
-              Settlement History ({settlements.length})
+              Settlement History ({localSettlements.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {settlements.length === 0 ? (
+            {localSettlements.length === 0 ? (
               <div className="text-center py-8">
                 <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No settlements yet</h3>
@@ -262,7 +298,7 @@ export default function SettlementList({ settlements, groupBalances, summary, us
               </div>
             ) : (
               <div className="space-y-4">
-                {settlements.map((settlement) => (
+                {localSettlements.map((settlement) => (
                   <div key={settlement.id} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">

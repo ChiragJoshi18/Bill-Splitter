@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import FlashMessage from '@/components/flash-message';
+import { useToast } from '@/components/ui/toast';
 import { 
   Plus, 
   Users, 
@@ -65,12 +66,18 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function GroupList({ groups, user }: Props) {
   const page = usePage();
+  const { addToast } = useToast();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editGroup, setEditGroup] = useState<Group | null>(null);
   const [deleteGroup, setDeleteGroup] = useState<Group | null>(null);
   const [inviteGroup, setInviteGroup] = useState<Group | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [localGroups, setLocalGroups] = useState<Group[]>(groups);
+  
+  // Update local groups when props change
+  React.useEffect(() => {
+    setLocalGroups(groups);
+  }, [groups]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

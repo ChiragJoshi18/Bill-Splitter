@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 
 import { useForm } from '@inertiajs/react';
 import { Users, Plus } from 'lucide-react';
+import { useToast } from '@/components/ui/toast';
 
 interface Props {
   open: boolean;
@@ -13,6 +14,7 @@ interface Props {
 }
 
 export default function CreateGroupModal({ open, onClose, onGroupCreated }: Props) {
+    const { addToast } = useToast();
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         description: '',
@@ -24,10 +26,22 @@ export default function CreateGroupModal({ open, onClose, onGroupCreated }: Prop
             onSuccess: (response) => {
                 reset();
                 onClose();
+                addToast({
+                    type: 'success',
+                    title: 'Group created successfully!',
+                    message: `The group "${data.name}" has been created.`
+                });
                 // Call the callback to update the local state
                 if (onGroupCreated && response.props?.group) {
                     onGroupCreated(response.props.group);
                 }
+            },
+            onError: (errors) => {
+                addToast({
+                    type: 'error',
+                    title: 'Failed to create group',
+                    message: Object.values(errors).join(', ')
+                });
             }
         });
     };

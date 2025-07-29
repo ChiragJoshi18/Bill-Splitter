@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/components/ui/toast';
 import { 
     Receipt, 
     Users, 
@@ -56,6 +57,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function CreateExpense({ groups, categories }: Props) {
+  const { addToast } = useToast();
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [payers, setPayers] = useState<Payer[]>([]);
@@ -155,7 +157,23 @@ export default function CreateExpense({ groups, categories }: Props) {
       amount_paid: p.amount_paid,
     })));
     
-    post('/expenses');
+    post('/expenses', {
+      onSuccess: () => {
+        addToast({
+          type: 'success',
+          title: 'Expense created successfully!',
+          message: `The expense "${data.title}" has been added to your group.`
+        });
+        // The page will redirect to expenses list, which will show the new expense
+      },
+      onError: (errors) => {
+        addToast({
+          type: 'error',
+          title: 'Failed to create expense',
+          message: Object.values(errors).join(', ')
+        });
+      }
+    });
   };
 
   const formatAmount = (amount: number) => {

@@ -37,6 +37,13 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 export default function InviteList({ invitations, user }: Props) {
+  const [localInvitations, setLocalInvitations] = React.useState<Invitation[]>(invitations);
+  
+  // Update local invitations when props change
+  React.useEffect(() => {
+    setLocalInvitations(invitations);
+  }, [invitations]);
+  
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -91,11 +98,11 @@ export default function InviteList({ invitations, user }: Props) {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Mail className="w-5 h-5" />
-              Sent Invitations ({invitations.length})
+              Sent Invitations ({localInvitations.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {invitations.length === 0 ? (
+            {localInvitations.length === 0 ? (
               <div className="text-center py-8">
                 <Mail className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No invitations sent yet</h3>
@@ -116,7 +123,7 @@ export default function InviteList({ invitations, user }: Props) {
                     </tr>
                   </thead>
                   <tbody>
-                    {invitations.map((invitation, index) => (
+                    {localInvitations.map((invitation, index) => (
                       <tr key={invitation.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="py-3 px-4 text-sm text-muted-foreground">
                           {index + 1}
