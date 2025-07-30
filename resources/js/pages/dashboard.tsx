@@ -4,6 +4,8 @@ import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
 import EditGroupModal from './Groups/EditGroupModal';
 import DeleteGroupModal from './Groups/DeleteGroupModal';
+import InviteMemberModal from './Groups/InviteMemberModal';
+import CreateGroupModal from './Groups/CreateGroupModal';
 import FinancialSummaryCards from '@/components/financial-summary-cards';
 import { 
   Pencil, 
@@ -61,6 +63,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 export default function Dashboard({ groups, auth, financialSummary }: Props) {
   const [editGroup, setEditGroup] = useState<Group | null>(null);
   const [deleteGroup, setDeleteGroup] = useState<Group | null>(null);
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [createGroupModalOpen, setCreateGroupModalOpen] = useState(false);
 
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -103,17 +107,21 @@ export default function Dashboard({ groups, auth, financialSummary }: Props) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button asChild variant="outline" size="sm">
-              <Link href="/groups/create">
-                <Plus className="w-4 h-4 mr-2" />
-                New Group
-              </Link>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setCreateGroupModalOpen(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              New Group
             </Button>
-            <Button asChild size="sm">
-              <Link href="/expenses/create">
-                <Receipt className="w-4 h-4 mr-2" />
-                Add Expense
-              </Link>
+            <Button 
+              size="sm" 
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => setInviteModalOpen(true)}
+            >
+              <Users className="w-4 h-4 mr-2" />
+              Invite Members
             </Button>
           </div>
         </div>
@@ -184,11 +192,9 @@ export default function Dashboard({ groups, auth, financialSummary }: Props) {
                     <p className="text-muted-foreground mb-4">
                       Create your first group to start splitting expenses with friends and family.
                     </p>
-                    <Button asChild>
-                      <Link href="/groups/create">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create Group
-                      </Link>
+                    <Button onClick={() => setCreateGroupModalOpen(true)}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Group
                     </Button>
                   </div>
                 ) : (
@@ -365,6 +371,20 @@ export default function Dashboard({ groups, auth, financialSummary }: Props) {
       {deleteGroup && (
         <DeleteGroupModal group={deleteGroup} onClose={() => setDeleteGroup(null)} />
       )}
+      
+      <InviteMemberModal 
+        open={inviteModalOpen}
+        onClose={() => setInviteModalOpen(false)}
+        groups={groups}
+      />
+      
+      <CreateGroupModal 
+        open={createGroupModalOpen}
+        onClose={() => setCreateGroupModalOpen(false)}
+        onGroupCreated={(newGroup: any) => {
+          // The page will refresh with new data, so no need to manually update state
+        }}
+      />
     </AppLayout>
   );
 }

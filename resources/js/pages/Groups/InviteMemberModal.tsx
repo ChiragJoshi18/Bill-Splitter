@@ -53,8 +53,8 @@ export default function InviteMemberModal({ open, onClose, groupId, groups }: Pr
             Invite Member
           </DialogTitle>
         </DialogHeader>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+          <form onSubmit={handleSubmit} className="space-y-4">
           {selectedGroup && (
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-700 dark:text-blue-300">
@@ -63,18 +63,18 @@ export default function InviteMemberModal({ open, onClose, groupId, groups }: Pr
             </div>
           )}
           
-          <div>
+            <div>
             <Label htmlFor="email">Email Address</Label>
             <Input
               id="email"
-              type="email"
-              value={data.email}
-              onChange={(e) => setData('email', e.target.value)}
+                type="email"
+                value={data.email}
+                onChange={(e) => setData('email', e.target.value)}
               placeholder="Enter email address"
-              required
-            />
-            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-          </div>
+                required
+              />
+              {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+            </div>
 
           {!groupId && (
             <div>
@@ -101,7 +101,7 @@ export default function InviteMemberModal({ open, onClose, groupId, groups }: Pr
             <p>• The user will receive an email invitation to join the group</p>
             <p>• They can accept the invitation by clicking the link in the email</p>
             <p>• If they don't have an account, they'll be prompted to create one</p>
-          </div>
+            </div>
 
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={onClose}>
@@ -109,10 +109,10 @@ export default function InviteMemberModal({ open, onClose, groupId, groups }: Pr
             </Button>
             <Button type="submit" disabled={processing || !data.group_id} className="flex items-center gap-2">
               <Mail className="w-4 h-4" />
-              {processing ? 'Sending...' : 'Send Invite'}
+                {processing ? 'Sending...' : 'Send Invite'}
             </Button>
           </DialogFooter>
-        </form>
+          </form>
       </DialogContent>
     </Dialog>
   );

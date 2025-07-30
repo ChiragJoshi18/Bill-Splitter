@@ -81,7 +81,7 @@ export function AppSidebar() {
             <SidebarContent>
                 {/* Main Navigation */}
                 <SidebarGroup className="px-2 py-0">
-                    <SidebarGroupLabel>Platform</SidebarGroupLabel>
+                    <SidebarGroupLabel className="text-base font-semibold">Platform</SidebarGroupLabel>
                     <SidebarMenu>
                         {mainNavItems.map((item) => (
                             <SidebarMenuItem key={item.title}>
@@ -89,12 +89,13 @@ export function AppSidebar() {
                                     asChild 
                                     isActive={page.url.startsWith(item.href)} 
                                     tooltip={{ children: item.title }}
+                                    className="text-base font-medium"
                                 >
-                                    <Link href={item.href} prefetch>
-                                        {item.icon && <item.icon />}
-                                        <span>{item.title}</span>
+                                    <Link href={item.href} prefetch className="text-base">
+                                        {item.icon && <item.icon className="w-5 h-5" />}
+                                        <span className="text-base font-medium">{item.title}</span>
                                         {item.title === 'Notifications' && unreadCount > 0 && (
-                                            <Badge className="ml-auto bg-red-500 text-white text-xs px-1.5 py-0.5 min-w-[1.25rem]">
+                                            <Badge className="ml-auto bg-red-500 text-white text-sm px-2 py-1 min-w-[1.5rem]">
                                                 {unreadCount > 99 ? '99+' : unreadCount}
                                             </Badge>
                                         )}
