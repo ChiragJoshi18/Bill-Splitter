@@ -1,0 +1,28 @@
+{
+  "buildCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan migrate --force",
+  "outputDirectory": "public",
+  "installCommand": "echo 'Installation handled in build command'",
+  "framework": "laravel",
+  "functions": {
+    "app/Http/Controllers/**/*.php": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.php"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/build/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+} 
