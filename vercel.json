@@ -1,22 +1,21 @@
 {
-  "buildCommand": "composer install --no-dev --optimize-autoloader && npm install && npm run build && php artisan migrate --force",
-  "outputDirectory": "public",
-  "installCommand": "echo 'Installation handled in build command'",
-  "framework": "laravel",
-  "functions": {
-    "app/Http/Controllers/**/*.php": {
-      "runtime": "nodejs18.x"
-    }
-  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "public/build",
+  "installCommand": "npm install",
+  "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/(.*)",
+      "destination": "https://your-railway-backend-url.railway.app/api/$1"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.php"
+      "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "public/build/(.*)",
+      "source": "/build/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -24,5 +23,8 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "VITE_API_URL": "https://your-railway-backend-url.railway.app"
+  }
 } 

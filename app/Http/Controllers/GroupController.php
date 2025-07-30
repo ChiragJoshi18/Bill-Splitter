@@ -133,5 +133,79 @@ class GroupController extends Controller
     return redirect()->back()->with('success', 'Group deleted successfully.');
 }
 
+    // API Methods
+    public function apiIndex()
+    {
+        $user = Auth::user();
+        
+        $groups = $user->groups()
+            ->with(['users:id,name', 'expenses'])
+            ->withCount(['expenses', 'users'])
+            ->get()
+            ->map(function ($group) {
+                $totalExpenses = $group->expenses->sum('total_amount');
+                
+                $userExpenses = $group->expenses()
+                    ->whereHas('participants', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->get();
+                
+                $userShare = $userExpenses->sum(function ($expense) {
+                    return $expense->participants()
+                        ->where('user_id', Auth::id())
+                        ->first()
+                        ->pivot
+                        ->share_amount ?? 0;
+                });
+                
+                $userPaid = $group->expenses()
+                    ->whereHas('payers', function ($query) {
+                        $query->where('user_id', Auth::id());
+                    })
+                    ->get()
+                    ->sum(function ($expense) {
+                        return $expense->payers()
+                            ->where('user_id', Auth::id())
+                            ->first()
+                            ->pivot
+                            ->amount_paid ?? 0;
+                    });
+                
+                return [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'description' => $group->description,
+                    'created_by' => $group->created_by,
+                    'created_at' => $group->created_at,
+                    'users' => $group->users,
+                    'users_count' => $group->users_count,
+                    'expenses_count' => $group->expenses_count,
+                    'total_expenses' => round($totalExpenses, 2),
+                    'user_share' => round($userShare, 2),
+                    'user_paid' => round($userPaid, 2),
+                    'user_balance' => round($userPaid - $userShare, 2),
+                ];
+            });
 
+        return response()->json([
+            'groups' => $groups,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'currency_symbol' => $user->currency_symbol,
+            ],
+        ]);
+    }
+
+    public function show(Group $group)
+    {
+        if ($group->created_by !== Auth::id() && !$group->users->contains(Auth::id())) {
+            abort(403, 'Unauthorized.');
+        }
+        
+        $group->load(['users:id,name', 'expenses.payers', 'expenses.participants']);
+        
+        return response()->json($group);
+    }
 }
