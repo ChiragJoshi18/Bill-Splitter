@@ -9,7 +9,7 @@
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
         "types": "tsc --noEmit",
-        "postinstall": "php artisan key:generate --force"
+        "postinstall": "[ -f .env ] || cp .env.example .env && php artisan key:generate --force"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
