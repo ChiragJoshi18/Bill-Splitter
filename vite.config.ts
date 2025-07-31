@@ -22,4 +22,5 @@ export default defineConfig({
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
+    base: 'https://billsplitter-lwz8w.sevalla.app/', // this line forces HTTPS links in build output
 });
