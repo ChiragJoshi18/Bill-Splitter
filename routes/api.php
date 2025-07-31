@@ -10,9 +10,19 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 
-// Health check
-Route::get('/health', function () {
-    return response()->json(['status' => 'ok']);
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "api" middleware group. Make something great!
+|
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
 
 // Public routes
