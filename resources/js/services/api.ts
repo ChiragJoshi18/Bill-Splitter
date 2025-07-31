@@ -1,12 +1,15 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://billsplitter-lwz8w.sevalla.app';
+console.log('API URL:', API_URL); 
+
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json',
+    'Accept': 'application/json', 
   },
   withCredentials: true,
 });
